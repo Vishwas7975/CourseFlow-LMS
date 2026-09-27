@@ -99,7 +99,7 @@ define('VS_GOOGLE_REDIRECT_URI', 'https://yourdomain.com/google_callback.php');
 
 ### 4. Run the Application
 
-Point your web server's document root to the project folder, or use PHP's built-in server for local testing:
+Point your web server's document root to the project folder or use PHP's built-in server for local testing:
 
 ```bash
 php -S localhost:8000
@@ -115,4 +115,6 @@ This is a portfolio version of a production LMS — sample configuration values 
 
 ## License
 
-This project is shared for portfolio and demonstration purposes.
+This project is shared publicly for portfolio and demonstration purposes.
+
+All rights are reserved by the author. No permission is granted to copy, modify or redistribute this project without prior written permission.
