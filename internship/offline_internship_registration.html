@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" type="image/png" href="/assets/images/favicon.png">
+<title>Offline Internship Registration — CourseFlow</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="icon" type="image/png" href="../assets/images/favicon.png">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue-dark:#0f1b3d;
+  --blue-mid:#1a2e6b;
+  --blue:#2448c8;
+  --blue-light:#3b82f6;
+  --blue-pale:#eff6ff;
+  --blue-border:#bfdbfe;
+  --green:#16a34a;
+  --orange:#ea580c;
+  --white:#ffffff;
+  --grey-bg:#f3f6fb;
+  --grey-text:#64748b;
+  --ink:#0f172a;
+  --border:#e2e8f0;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--grey-bg);color:var(--ink);min-height:100vh;}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 40px;background:rgba(15,27,61,.9);backdrop-filter:blur(10px);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.logo-icon svg{width:20px;height:20px;fill:none;stroke:white;stroke-width:2;}
+.logo-text{font-weight:800;font-size:1rem;color:white;letter-spacing:-.01em;}
+.logo-sub{font-size:.62rem;color:rgba(255,255,255,.5);font-weight:400;letter-spacing:.08em;text-transform:uppercase;display:block;margin-top:-2px;}
+.back-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 16px;color:white;font-size:.82rem;font-weight:500;cursor:pointer;text-decoration:none;transition:background .2s;}
+.back-btn:hover{background:rgba(255,255,255,.18);}
+.back-btn svg{width:14px;height:14px;stroke:white;fill:none;stroke-width:2;}
+
+/* ── HERO ── */
+.hero{padding:110px 40px 80px;background:linear-gradient(160deg,#0f1b3d 0%,#1a2e6b 42%,#2448c8 72%,#3730a3 100%);position:relative;overflow:hidden;text-align:center;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 80%,rgba(59,130,246,.22),transparent),radial-gradient(ellipse 60% 40% at 80% 20%,rgba(99,102,241,.18),transparent);}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;background:var(--grey-bg);clip-path:ellipse(55% 100% at 50% 100%);}
+.hero-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;}
+.hero-inner{position:relative;z-index:2;}
+
+.reg-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:40px;padding:5px 16px;margin-bottom:14px;}
+.reg-pill .dot{width:7px;height:7px;background:#4ade80;border-radius:50%;box-shadow:0 0 6px #4ade80;}
+.reg-pill span{font-size:.72rem;font-weight:600;color:white;letter-spacing:.08em;text-transform:uppercase;}
+
+.hero-date{color:rgba(255,255,255,.7);font-size:.82rem;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:7px;}
+.hero-date svg{width:14px;height:14px;stroke:rgba(255,255,255,.7);fill:none;stroke-width:2;}
+
+.org-pill{display:inline-flex;align-items:center;gap:8px;background:white;border-radius:8px;padding:6px 16px;margin-bottom:26px;}
+.org-pill span{font-size:.75rem;font-weight:600;color:#475569;letter-spacing:.04em;}
+.org-pill strong{color:#1a56db;}
+
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;color:white;line-height:1.1;letter-spacing:-.03em;margin-bottom:8px;}
+.hero h1 .gtxt{background:linear-gradient(90deg,#93c5fd,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{color:rgba(255,255,255,.72);font-size:.97rem;line-height:1.7;max-width:520px;margin:0 auto 28px;}
+
+.hero-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
+.hbadge{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:40px;padding:6px 14px;}
+.hbadge svg{width:13px;height:13px;stroke:rgba(255,255,255,.8);fill:none;stroke-width:2;}
+.hbadge span{font-size:.74rem;color:rgba(255,255,255,.9);font-weight:500;}
+
+/* ── LAYOUT ── */
+.main{max-width:1100px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;}
+
+/* ── FORM CARD ── */
+.form-card{background:white;border-radius:16px;border:1px solid var(--border);box-shadow:0 2px 20px rgba(15,27,61,.07);}
+.form-card-header{background:linear-gradient(135deg,#1a2e6b,#2448c8);border-radius:16px 16px 0 0;padding:20px 28px;display:flex;align-items:flex-start;gap:14px;}
+.fch-icon{width:38px;height:38px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.fch-icon svg{width:20px;height:20px;stroke:white;fill:none;stroke-width:2;}
+.fch-title{font-weight:700;font-size:1rem;color:white;}
+.fch-sub{font-size:.76rem;color:rgba(255,255,255,.7);margin-top:3px;line-height:1.5;}
+.form-body{padding:28px;}
+
+/* ── SECTION HEAD ── */
+.sec-head{display:flex;align-items:center;gap:10px;margin:28px 0 18px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.sec-head:first-child{margin-top:0;}
+.sec-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sec-icon.si-blue{background:#eff6ff;}
+.sec-icon.si-yellow{background:#fef3c7;}
+.sec-icon.si-green{background:#f0fdf4;}
+.sec-icon svg{width:14px;height:14px;stroke-width:2;fill:none;}
+.sec-icon.si-blue svg{stroke:#2448c8;}
+.sec-icon.si-yellow svg{stroke:#d97706;}
+.sec-icon.si-green svg{stroke:#16a34a;}
+.sec-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey-text);}
+
+/* ── FIELDS ── */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.field label{font-size:.76rem;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:5px;}
+.field label svg{width:13px;height:13px;stroke:var(--grey-text);fill:none;stroke-width:2;}
+.req{color:#ef4444;}
+.field input,.field select{width:100%;padding:11px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;color:var(--ink);background:#f8faff;border:1.5px solid #dbeafe;border-radius:10px;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;-webkit-appearance:none;appearance:none;}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%2364748b' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:36px;cursor:pointer;}
+.field input::placeholder{color:#94a3b8;}
+.field input:focus,.field select:focus{border-color:var(--blue);background:white;box-shadow:0 0 0 3px rgba(36,72,200,.1);}
+.field-hint{font-size:.7rem;color:var(--grey-text);display:flex;align-items:center;gap:4px;}
+.field-hint svg{width:11px;height:11px;stroke:var(--grey-text);fill:none;stroke-width:2;}
+
+/* ── RADIO GRID (Admission Type) ── */
+.radio-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* Hide native radio input entirely — the label IS the clickable area */
+.radio-opt input[type="radio"],
+.domain-card input[type="radio"]{
+  position:absolute;
+  opacity:0;
+  width:0;
+  height:0;
+  pointer-events:none;
+}
+
+.radio-opt{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border:1.5px solid #dbeafe;
+  border-radius:10px;
+  padding:11px 14px 11px 42px;
+  cursor:pointer;
+  transition:border-color .2s,background .2s,box-shadow .2s;
+  user-select:none;
+  -webkit-user-select:none;
+}
+/* Custom radio indicator */
+.radio-opt::before{
+  content:'';
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  border:2px solid #cbd5e1;
+  background:white;
+  transition:border-color .18s,background .18s;
+  flex-shrink:0;
+}
+/* Inner dot when selected */
+.radio-opt::after{
+  content:'';
+  position:absolute;
+  left:19px;
+  top:50%;
+  transform:translateY(-50%);
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:transparent;
+  transition:background .18s;
+}
+.radio-opt:hover{border-color:#93c5fd;background:#f0f9ff;}
+.radio-opt:hover::before{border-color:#93c5fd;}
+
+/* Selected state — via JS class */
+.radio-opt.selected{border-color:var(--blue);background:#eff6ff;box-shadow:0 0 0 2px rgba(36,72,200,.12);}
+.radio-opt.selected::before{border-color:var(--blue);background:var(--blue);}
+.radio-opt.selected::after{background:white;}
+
+/* CSS :has() for native checked fallback (modern browsers) */
+.radio-opt:has(input:checked){border-color:var(--blue);background:#eff6ff;box-shadow:0 0 0 2px rgba(36,72,200,.12);}
+.radio-opt:has(input:checked)::before{border-color:var(--blue);background:var(--blue);}
+.radio-opt:has(input:checked)::after{background:white;}
+
+.radio-opt span{font-size:.85rem;font-weight:500;color:var(--ink);line-height:1.3;}
+
+/* ── DOMAIN GRID ── */
+.domain-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+
+.domain-card{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border:1.5px solid #dbeafe;
+  border-radius:10px;
+  padding:12px 14px 12px 40px;
+  cursor:pointer;
+  transition:border-color .2s,background .2s,box-shadow .2s;
+  user-select:none;
+  -webkit-user-select:none;
+}
+/* Custom radio indicator for domain cards */
+.domain-card::before{
+  content:'';
+  position:absolute;
+  left:13px;
+  top:50%;
+  transform:translateY(-50%);
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  border:2px solid #cbd5e1;
+  background:white;
+  transition:border-color .18s,background .18s;
+}
+.domain-card::after{
+  content:'';
+  position:absolute;
+  left:17px;
+  top:50%;
+  transform:translateY(-50%);
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:transparent;
+  transition:background .18s;
+}
+.domain-card:hover{border-color:#93c5fd;background:#f0f9ff;}
+.domain-card:hover::before{border-color:#93c5fd;}
+
+.domain-card.selected{border-color:var(--blue);background:#eff6ff;box-shadow:0 0 0 2px rgba(36,72,200,.12);}
+.domain-card.selected::before{border-color:var(--blue);background:var(--blue);}
+.domain-card.selected::after{background:white;}
+
+.domain-card:has(input:checked){border-color:var(--blue);background:#eff6ff;box-shadow:0 0 0 2px rgba(36,72,200,.12);}
+.domain-card:has(input:checked)::before{border-color:var(--blue);background:var(--blue);}
+.domain-card:has(input:checked)::after{background:white;}
+
+.domain-emoji{font-size:1.15rem;line-height:1;flex-shrink:0;}
+.domain-name{font-size:.82rem;font-weight:600;color:var(--ink);line-height:1.3;}
+
+/* ── SECURITY NOTE ── */
+.security-note{display:flex;align-items:center;gap:8px;background:#f8faff;border:1px solid #dbeafe;border-radius:8px;padding:10px 14px;margin-bottom:18px;}
+.security-note svg{width:14px;height:14px;stroke:#2448c8;fill:none;stroke-width:2;flex-shrink:0;}
+.security-note span{font-size:.73rem;color:var(--grey-text);}
+
+/* ── SUBMIT BUTTON ── */
+.btn-submit{width:100%;padding:15px;background:linear-gradient(135deg,var(--blue),#1d4ed8);color:white;border:none;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.97rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s,transform .15s,box-shadow .2s;box-shadow:0 4px 20px rgba(36,72,200,.35);}
+.btn-submit:hover{opacity:.93;transform:translateY(-1px);box-shadow:0 8px 28px rgba(36,72,200,.4);}
+.btn-submit:active{transform:none;}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.btn-submit svg{width:18px;height:18px;stroke:white;fill:none;stroke-width:2;}
+.btn-spin{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── ERROR ALERT ── */
+.alert-err{display:none;border-radius:10px;padding:12px 16px;font-size:.83rem;line-height:1.5;border:1.5px solid #fca5a5;background:#fff5f5;color:#dc2626;align-items:flex-start;gap:8px;margin-bottom:16px;}
+.alert-err svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;margin-top:1px;}
+
+/* ── SIDEBAR ── */
+.sidebar{display:flex;flex-direction:column;gap:18px;}
+
+.urgency-card{background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:18px;}
+.urgency-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.urgency-head span{font-weight:700;font-size:.92rem;color:#92400e;}
+.urgency-sub{font-size:.78rem;color:#a16207;margin-bottom:12px;}
+.progress-bar-wrap{background:#fde68a;border-radius:40px;height:8px;overflow:hidden;margin-bottom:6px;}
+.progress-bar{height:100%;border-radius:40px;background:linear-gradient(90deg,#f59e0b,#d97706);width:72%;}
+.progress-label{display:flex;justify-content:space-between;font-size:.71rem;font-weight:600;color:#92400e;}
+.urgency-tip{display:flex;align-items:flex-start;gap:7px;background:#fef3c7;border-radius:8px;padding:10px 12px;margin-top:12px;}
+.urgency-tip svg{width:14px;height:14px;stroke:#d97706;fill:none;stroke-width:2;flex-shrink:0;margin-top:1px;}
+.urgency-tip span{font-size:.74rem;color:#92400e;line-height:1.5;}
+
+.details-card{background:var(--blue-dark);border-radius:14px;padding:20px;}
+.details-title{font-weight:700;font-size:.95rem;color:white;margin-bottom:3px;}
+.details-sub{font-size:.73rem;color:rgba(255,255,255,.45);margin-bottom:18px;}
+.detail-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;}
+.detail-item:last-child{margin-bottom:0;}
+.di-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.di-icon.g{background:rgba(74,222,128,.15);}
+.di-icon.b{background:rgba(96,165,250,.15);}
+.di-icon.o{background:rgba(251,146,60,.15);}
+.di-icon.p{background:rgba(167,139,250,.15);}
+.di-icon.y{background:rgba(250,204,21,.15);}
+.di-icon.g svg{stroke:#4ade80;}
+.di-icon.b svg{stroke:#60a5fa;}
+.di-icon.o svg{stroke:#fb923c;}
+.di-icon.p svg{stroke:#a78bfa;}
+.di-icon.y svg{stroke:#facc15;}
+.di-icon svg{width:15px;height:15px;fill:none;stroke-width:2;}
+.di-label{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:2px;}
+.di-val{font-size:.87rem;font-weight:600;color:white;}
+.di-hint{font-size:.72rem;color:rgba(255,255,255,.4);margin-top:1px;}
+
+.who-card{background:linear-gradient(135deg,#14532d,#166534);border-radius:14px;padding:20px;}
+.who-title{font-weight:700;font-size:.95rem;color:white;margin-bottom:3px;}
+.who-sub{font-size:.73rem;color:rgba(255,255,255,.5);margin-bottom:14px;}
+.who-item{display:flex;align-items:flex-start;gap:9px;margin-bottom:10px;}
+.who-item:last-child{margin-bottom:0;}
+.who-dot{width:18px;height:18px;background:rgba(74,222,128,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.who-dot svg{width:10px;height:10px;stroke:#4ade80;fill:none;stroke-width:2.5;}
+.who-item span{font-size:.82rem;color:rgba(255,255,255,.88);line-height:1.4;}
+
+.acc-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;}
+.acc-label{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey-text);margin-bottom:14px;}
+.acc-logos{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;}
+.acc-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.acc-logo-wrap img{height:48px;width:auto;max-width:90px;object-fit:contain;}
+.acc-badge{display:none;padding:5px 12px;border-radius:7px;font-size:.72rem;font-weight:800;letter-spacing:.04em;border:1.5px solid currentColor;}
+.acc-name{font-size:.6rem;color:var(--grey-text);font-weight:600;text-align:center;}
+.acc-note{font-size:.71rem;color:var(--grey-text);margin-top:12px;}
+
+/* ── SUCCESS OVERLAY ── */
+.success-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,20,50,.6);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:24px;}
+.success-overlay.show{display:flex;animation:fadeIn .3s;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.success-modal{background:white;border-radius:20px;max-width:440px;width:100%;padding:44px 36px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.22);animation:popIn .35s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+.s-check{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#4ade80);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.s-check svg{width:32px;height:32px;stroke:white;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.success-modal h2{font-size:1.5rem;font-weight:800;margin-bottom:8px;color:var(--ink);}
+.success-modal p{color:var(--grey-text);font-size:.9rem;line-height:1.6;margin-bottom:4px;}
+.s-id{display:inline-block;margin:14px 0;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 20px;font-size:.82rem;font-weight:700;color:var(--blue);letter-spacing:.04em;}
+.s-close{margin-top:20px;display:inline-block;padding:12px 36px;background:var(--blue);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.9rem;border-radius:10px;cursor:pointer;border:none;transition:background .2s;box-shadow:0 4px 14px rgba(36,72,200,.3);}
+.s-close:hover{background:#1d4ed8;}
+/* Password notice box */
+.pwd-notice{margin:14px 0 4px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:12px;padding:14px 16px;text-align:left;}
+.pwd-notice-head{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.pwd-notice-head svg{width:16px;height:16px;stroke:#d97706;fill:none;stroke-width:2;flex-shrink:0;}
+.pwd-notice-head span{font-size:.8rem;font-weight:700;color:#92400e;letter-spacing:.01em;}
+.pwd-row{display:flex;align-items:center;justify-content:space-between;background:white;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;margin-bottom:6px;}
+.pwd-row-label{font-size:.71rem;color:#92400e;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+.pwd-row-val{font-size:.82rem;font-weight:700;color:#1a2e6b;letter-spacing:.04em;}
+.pwd-warn{display:flex;align-items:flex-start;gap:6px;margin-top:6px;}
+.pwd-warn svg{width:13px;height:13px;stroke:#d97706;fill:none;stroke-width:2;flex-shrink:0;margin-top:1px;}
+.pwd-warn span{font-size:.72rem;color:#92400e;line-height:1.45;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:820px){
+  .topbar{padding:12px 20px;}
+  .hero{padding:90px 20px 70px;}
+  .main{grid-template-columns:1fr;padding:24px 16px 60px;}
+  .sidebar{order:-1;}
+}
+@media(max-width:560px){
+  .field-row{grid-template-columns:1fr;}
+  .radio-grid{grid-template-columns:1fr;}
+  .domain-grid{grid-template-columns:1fr;}
+  .form-body{padding:20px 18px;}
+  .hero h1{font-size:1.8rem;}
+  .success-modal{padding:32px 22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="topbar">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <div class="logo-text">CourseFlow</div>
+      <span class="logo-sub">Technologies Private Limited, Bangalore.</span>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-dots"></div>
+  <div class="hero-inner">
+    <div class="reg-pill">
+      <span class="dot"></span>
+      <span>Offline Registration Open — 2026, 2027, 2028 Batch</span>
+    </div>
+    <div class="hero-date">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      In-Person Program — CourseFlow Campus
+    </div>
+    <div class="org-pill">
+      <span>Organised by</span>
+      <strong>🏛️ CourseFlow</strong>
+    </div>
+    <h1>Offline Short Term<br><span class="gtxt">Internship Registration</span></h1>
+    <p>Attend in person at our campus. Real mentors, real labs, real projects — earn a certificate and build your portfolio with hands-on offline training.</p>
+    <div class="hero-badges">
+      <div class="hbadge"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Limited Seats</span></div>
+      <div class="hbadge"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg><span>Certification of Completion</span></div>
+      <div class="hbadge"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><span>Hands-on Projects</span></div>
+      <div class="hbadge"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>On-Campus Training</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- FORM CARD -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="fch-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div>
+        <div class="fch-title">Internship Registration Form</div>
+        <div class="fch-sub">All fields are required — enter details accurately as per your college records</div>
+      </div>
+    </div>
+
+    <div class="form-body">
+      <div class="alert-err" id="alertErr">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="alertErrTxt"></span>
+      </div>
+
+      <form id="regForm" novalidate>
+
+        <!-- PERSONAL INFORMATION -->
+        <div class="sec-head">
+          <div class="sec-icon si-blue">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <span class="sec-label">Personal Information</span>
+        </div>
+
+        <div class="field">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Name (Full Name as per SSC) <span class="req">*</span>
+          </label>
+          <input type="text" name="full_name" placeholder="Your full name exactly as on SSC certificate" autocomplete="name"/>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>
+              <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              Registration Number <span class="req">*</span>
+            </label>
+            <input type="text" name="registration_number" placeholder="e.g. 22BD1A0501"/>
+            <span class="field-hint">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              As printed on your college ID
+            </span>
+          </div>
+          <div class="field">
+            <label>
+              <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Email ID <span class="req">*</span>
+            </label>
+            <input type="email" name="email" placeholder="you@email.com" autocomplete="email"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.08 3.4 2 2 0 0 1 3 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16l.92.92z"/></svg>
+            Mobile Number <span class="req">*</span>
+          </label>
+          <input type="tel" name="mobile_number" placeholder="10-digit Indian mobile number" maxlength="10"/>
+          <span class="field-hint">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            WhatsApp-enabled preferred — details will be sent here
+          </span>
+        </div>
+
+        <!-- ACADEMIC INFORMATION -->
+        <div class="sec-head">
+          <div class="sec-icon si-yellow">
+            <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <span class="sec-label">Academic Information</span>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              Department <span class="req">*</span>
+            </label>
+            <input type="text" name="department" placeholder="e.g. CSE, ECE, MBA, MCA"/>
+          </div>
+          <div class="field">
+            <label>
+              <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              College Name <span class="req">*</span>
+            </label>
+            <input type="text" name="college_name" placeholder="Full official name of your college"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Admission Type <span class="req">*</span></label>
+          <div class="radio-grid">
+            <label class="radio-opt">
+              <input type="radio" name="admission_type" value="Management"/>
+              <span>🏫 Management</span>
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="admission_type" value="Convenor"/>
+              <span>🎓 Convenor</span>
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="admission_type" value="Lateral Entry"/>
+              <span>🔁 Lateral Entry</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- INTERNSHIP PREFERENCE -->
+        <div class="sec-head">
+          <div class="sec-icon si-green">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          </div>
+          <span class="sec-label">Internship Preference</span>
+        </div>
+
+        <div class="field">
+          <label>Select Your Internship Domain <span class="req">*</span></label>
+          <div class="domain-grid">
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="AI & ML"/><span class="domain-emoji">🤖</span><span class="domain-name">AI &amp; ML</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Data Science"/><span class="domain-emoji">🔭</span><span class="domain-name">Data Science</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Data Analytics"/><span class="domain-emoji">📊</span><span class="domain-name">Data Analytics</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Java Fullstack Development"/><span class="domain-emoji">☕</span><span class="domain-name">Java Fullstack Development</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Web Development"/><span class="domain-emoji">🌐</span><span class="domain-name">Web Development</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Python for AI & Automation"/><span class="domain-emoji">🐍</span><span class="domain-name">Python for AI &amp; Automation</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Cloud Computing & DevOps"/><span class="domain-emoji">☁️</span><span class="domain-name">Cloud Computing &amp; DevOps</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Cybersecurity, Digital Forensics & Social Media Forensics"/><span class="domain-emoji">🛡️</span><span class="domain-name">Cybersecurity, Digital Forensics &amp; Social Media Forensics</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Embedded Systems"/><span class="domain-emoji">🔌</span><span class="domain-name">Embedded Systems</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="IoT (Internet of Things)"/><span class="domain-emoji">📡</span><span class="domain-name">IoT (Internet of Things)</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="VLSI Designing"/><span class="domain-emoji">🔬</span><span class="domain-name">VLSI Designing</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Industrial Automation"/><span class="domain-emoji">🏭</span><span class="domain-name">Industrial Automation</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Power Generation, Transmission & Distribution"/><span class="domain-emoji">⚡</span><span class="domain-name">Power Generation, Transmission &amp; Distribution</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="UI/UX Design & Graphic Designing"/><span class="domain-emoji">🎨</span><span class="domain-name">UI/UX Design &amp; Graphic Designing</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Digital Marketing"/><span class="domain-emoji">📣</span><span class="domain-name">Digital Marketing</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="SAP (R to R)"/><span class="domain-emoji">📈</span><span class="domain-name">SAP (R to R)</span></label>
+            <label class="domain-card"><input type="radio" name="internship_chosen" value="Medical Coding"/><span class="domain-emoji">🏥</span><span class="domain-name">Medical Coding</span></label>
+          </div>
+        </div>
+
+        <div class="security-note">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Your data is secure and used solely for internship coordination. No spam, ever.</span>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <span id="btnTxt">Register for Internship</span>
+          <div class="btn-spin" id="btnSpin"></div>
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="urgency-card">
+      <div class="urgency-head"><span>🔥</span><span>Seats filling fast!</span></div>
+      <div class="urgency-sub">2026 batch is almost full</div>
+      <div class="progress-bar-wrap"><div class="progress-bar"></div></div>
+      <div class="progress-label"><span>Registrations</span><span>72% filled</span></div>
+      <div class="urgency-tip">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Only a few seats remaining — register now before it closes.</span>
+      </div>
+    </div>
+
+    <div class="details-card">
+      <div class="details-title">Internship Details</div>
+      <div class="details-sub">Everything you need to know</div>
+      <div class="detail-item">
+        <div class="di-icon g"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div><div class="di-label">Start Date</div><div class="di-val">May 1st week 2026</div><div class="di-hint">Batches confirmed via mobile & email</div></div>
+      </div>
+      <div class="detail-item">
+        <div class="di-icon b"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div><div class="di-label">Duration</div><div class="di-val">6-Week Program</div><div class="di-hint">Mon – Sat, in-person sessions</div></div>
+      </div>
+      <div class="detail-item">
+        <div class="di-icon o"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div><div class="di-label">Mode</div><div class="di-val">Offline / On-Campus</div><div class="di-hint">Attend in person at CourseFlow campus</div></div>
+      </div>
+      <div class="detail-item">
+        <div class="di-icon p"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+        <div><div class="di-label">Fee</div><div class="di-val">₹6,000 + 18% GST = ₹7,080</div><div class="di-hint">Certificate + Project Kit + Mentorship included</div></div>
+      </div>
+    </div>
+
+    <div class="who-card">
+      <div class="who-title">Who Should Apply?</div>
+      <div class="who-sub">This internship is ideal for</div>
+      <div class="who-item"><div class="who-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Engineering students (1st–4th year)</span></div>
+      <div class="who-item"><div class="who-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>BCA / MCA / BSc CS students</span></div>
+      <div class="who-item"><div class="who-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Freshers seeking industry exposure</span></div>
+      <div class="who-item"><div class="who-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Anyone looking to upskill in tech</span></div>
+      <div class="who-item"><div class="who-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Students targeting campus placements</span></div>
+    </div>
+
+    <div class="acc-card">
+      <div class="acc-label">Accredited By</div>
+      <div class="acc-logos">
+        <div class="acc-logo-wrap">
+          <img src="https://www.uxdt.nic.in/wp-content/uploads/2024/05/all-india-council-of-technical-education-feature-all-india-council-of-technical-education-01.jpg"
+               alt="AICTE"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'"/>
+          <span class="acc-badge" style="color:#1e40af;background:#eff6ff;">AICTE</span>
+          <span class="acc-name">AICTE</span>
+        </div>
+        <div class="acc-logo-wrap">
+          <img src="https://cets.apsche.ap.gov.in/APSCHE/images/ApscheLogoNew.png"
+               alt="APSCHE"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'"/>
+          <span class="acc-badge" style="color:#92400e;background:#fef3c7;">APSCHE</span>
+          <span class="acc-name">APSCHE</span>
+        </div>
+       <div class="acc-logo-wrap">
+  <img src="https://cloud.google.com/_static/cloud/images/social-icon-google-cloud-1200-630.png"
+       alt="Google Cloud"
+       onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'"/>
+       
+  <span class="acc-badge" style="color:#1a73e8;background:#e8f0fe;">
+    Google Cloud
+  </span>
+  
+  <span class="acc-name">Google Cloud</span>
+</div>
+    
+      </div>
+      <div class="acc-note">Recognised by leading national &amp; state bodies</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-modal">
+    <div class="s-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <h2>Registration Successful! 🎉</h2>
+    <p>Welcome, <strong id="sName"></strong>!</p>
+    <p>You've registered for the <strong id="sInternship"></strong> internship track.</p>
+    <div class="s-id">Registration ID: <span id="sRegId"></span></div>
+
+    <!-- Login Credentials Notice -->
+    <div class="pwd-notice">
+      <div class="pwd-notice-head">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>🔑 Your Login Credentials</span>
+      </div>
+      <div class="pwd-row">
+        <span class="pwd-row-label">Username / Email</span>
+        <span class="pwd-row-val" id="sEmailCred">—</span>
+      </div>
+      <div class="pwd-row">
+        <span class="pwd-row-label">Temporary Password</span>
+        <span class="pwd-row-val" id="sRegIdCred">—</span>
+      </div>
+      <div class="pwd-warn">
+        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Use your <strong>College Registration Number as your password</strong> to log in for the first time. Please <strong>change your password</strong> immediately after logging in.</span>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;">
+      <button class="s-close" id="sPayBtn" onclick="choosePayNow()" style="background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;border:none;border-radius:12px;padding:12px 20px;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Pay Now — Confirm Seat Instantly
+      </button>
+      <button onclick="choosePayLater()" style="background:#f8fafc;color:#1e40af;border:2px solid #bfdbfe;border-radius:12px;padding:11px 20px;font-size:.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Pay Later — Login &amp; Pay Anytime
+      </button>
+    </div>
+    <p style="margin-top:8px;font-size:.73rem;color:#94a3b8;line-height:1.5;">Pay Later: log in with your credentials above, visit <em>My Internship</em> to complete payment.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── Radio card: toggle .selected on click ── */
+  function wireRadioGroup(selector) {
+    document.querySelectorAll(selector + ' input[type="radio"]').forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        // Remove selected from all siblings in the same group
+        document.querySelectorAll(selector + ' input[name="' + this.name + '"]').forEach(function (r) {
+          r.closest(selector).classList.remove('selected');
+        });
+        this.closest(selector).classList.add('selected');
+      });
+    });
+  }
+
+  wireRadioGroup('.radio-opt');
+  wireRadioGroup('.domain-card');
+
+  /* ── Form submission ── */
+  document.getElementById('regForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    var alertEl  = document.getElementById('alertErr');
+    var alertTxt = document.getElementById('alertErrTxt');
+    var btn      = document.getElementById('submitBtn');
+    var btnTxt   = document.getElementById('btnTxt');
+    var spin     = document.getElementById('btnSpin');
+
+    function showErr(msg) {
+      alertEl.style.display = 'flex';
+      alertTxt.textContent  = msg;
+      alertEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    alertEl.style.display = 'none';
+
+    var f   = this;
+    var get = function (n) { return (f.elements[n] ? f.elements[n].value : '').trim(); };
+
+    var name   = get('full_name');
+    var regNo  = get('registration_number');
+    var email  = get('email');
+    var mobile = get('mobile_number').replace(/[\s\-]/g, '');
+    var dept   = get('department');
+    var coll   = get('college_name');
+    var adm    = get('admission_type');
+    var intern = get('internship_chosen');
+
+    if (name.length < 3)                                          return showErr('Please enter your full name (min. 3 characters).');
+    if (regNo.length < 3)                                         return showErr('Please enter your registration number.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))               return showErr('Please enter a valid email address.');
+    if (!/^[6-9]\d{9}$/.test(mobile))                            return showErr('Enter a valid 10-digit Indian mobile number.');
+    if (dept.length < 2)                                          return showErr('Please enter your department.');
+    if (coll.length < 5)                                          return showErr('Please enter your full college name.');
+    if (!adm)                                                     return showErr('Please select your admission type.');
+    if (!intern)                                                   return showErr('Please select an internship domain.');
+
+    btn.disabled          = true;
+    btnTxt.style.display  = 'none';
+    spin.style.display    = 'block';
+
+    try {
+      var fd = new FormData(f);
+      fd.set('mobile_number', mobile);
+      fd.set('source_page', 'offline');
+
+      var res  = await fetch('internship_register.php', { method: 'POST', body: fd });
+      var data = await res.json();
+
+      if (data.success) {
+        var regIdFormatted = '#VS-INT-' + String(data.reg_id).padStart(4, '0');
+        document.getElementById('sName').textContent        = data.name;
+        document.getElementById('sInternship').textContent  = data.internship;
+        document.getElementById('sRegId').textContent       = regIdFormatted;
+        document.getElementById('sEmailCred').textContent   = email;
+        document.getElementById('sRegIdCred').textContent   = data.registration_number;
+        document.getElementById('successOverlay').classList.add('show');
+
+        f.reset();
+        document.querySelectorAll('.radio-opt, .domain-card').forEach(function (el) {
+          el.classList.remove('selected');
+        });
+
+        window._payRegId = data.reg_id;
+
+      } else {
+        showErr(data.message || 'Something went wrong. Please try again.');
+      }
+    } catch (err) {
+      showErr('Network error. Please check your connection and try again.');
+    } finally {
+      btn.disabled         = false;
+      btnTxt.style.display = '';
+      spin.style.display   = 'none';
+    }
+  });
+
+  /* ── Pay Now: notify admin then go to payment page ── */
+  window.choosePayNow = function () {
+    if (!window._payRegId) return;
+    var fd = new FormData();
+    fd.append('reg_id', window._payRegId);
+    fd.append('choice', 'pay_now');
+    fetch('internship_set_payment_choice.php', { method: 'POST', body: fd })
+      .catch(function () {}) // silent — best effort
+      .finally(function () {
+        window.location.href = 'internship_payment_offline.php?reg_id=' + window._payRegId;
+      });
+  };
+
+  /* ── Pay Later: call endpoint to mark payment_later, then go to login ── */
+  window.choosePayLater = function () {
+    if (!window._payRegId) return;
+    var fd = new FormData();
+    fd.append('reg_id', window._payRegId);
+    fd.append('choice', 'pay_later');
+    fetch('internship_set_payment_choice.php', { method: 'POST', body: fd })
+      .catch(function () {}) // silent — best effort
+      .finally(function () {
+        window.location.href = '../login.php?msg=pay_later';
+      });
+  };
+})();
+</script>
+</body>
+</html>
